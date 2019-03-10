@@ -195,6 +195,7 @@ str_to_int(dataset,len(dataset[0])-1)
 
 k_fold = 5
 l_rate = 0.2
+#l_rate = 0.8
 epoch = 300
 
 error_train = list()
