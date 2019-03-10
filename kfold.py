@@ -39,6 +39,8 @@ def fold(dataset,
          accuracy_train,accuracy_test):
     
     weights = [0.5 for i in range(len(dataset[0]))]
+    
+    #merandom dataset
     shuffle(dataset)
     
     dataset_test = list()
@@ -48,7 +50,7 @@ def fold(dataset,
         dataset_train = list(dataset)
         dataset_test = list()
 
-        #split from index a to b
+        #split data set from index a to b for testing data, dan sisanya untuk training data
         a = int(k*len(dataset)/k_fold)
         b = int(a+(len(dataset)/k_fold))
         
@@ -56,9 +58,11 @@ def fold(dataset,
             dataset_test.append(dataset_train[m])
         del dataset_train[a:b]
 
+        #melakukan training, dan me-retrun weigh terakhir untuk mengetes data test
         weights = train(dataset_train, l_rate,
                         n_epoch, error_train,accuracy_train)
         
+        #melakukan testing data menggunakan weight hasil training, tanpa melakukan pembaruan weight
         test(dataset_test,n_epoch,
              weights,error_test,accuracy_test)
         
@@ -72,11 +76,13 @@ def train(dataset_train, l_rate,
     weight = [0.0 for i in range(len(dataset_train))]
     sum_error = list()
     accuracy = list()
-    
+
+    #training sebanyak n epoch
     for epoch in range(n_epoch):
         sumAccuracy = 0
         sumError = 0
 
+        #menghitung sum weigh dan mengupdate weight 
         for row in dataset_train:
             activ = activation(row, weight)
             prediction = 1.0 if activ >= 0.5 else 0.0
@@ -89,7 +95,8 @@ def train(dataset_train, l_rate,
             weight[-1] = weight[0] + l_rate * dweight[-1]
             for i in range(len(row)-1):
                 weight[i] = weight[i] + l_rate * dweight[i]*row[i]
-                
+        
+        #memasukkan setiap acuracy dan error setiap epoch untuk divisualisasikan dalam grafik
         accuracy_train.append(sumAccuracy/len(dataset_train))
         error_train.append(sumError)
 
@@ -115,19 +122,24 @@ def activation(row, weights):
     
 ##test the data after training---------------------------------------------------------------------------------------------------------------------
 def test(dataset_test, n_epoch, weights, error_test,accuracy_test):
+    
+    #testing sebanyak n epoch
     for epoch in range(n_epoch):
         sumAccuracy = 0
-        sumError = 0        
+        sumError = 0
+
+        #menghitung sum weigh
         for row in dataset_test:
             activ = activation(row, weights)
             prediction = 1.0 if activ >= 0.5 else 0.0
-            
+
             if prediction == row[-1]:
                 sumAccuracy+=1
             
             error = (row[-1] - activ)**2
             sumError += error
-            
+
+        #memasukkan setiap acuracy dan error setiap epoch untuk divisualisasikan dalam grafik
         error_test.append(sumError)
         accuracy_test.append(sumAccuracy/len(dataset_test))
         
@@ -141,13 +153,16 @@ def averrage(error_train,error_test,
     errorTest = [0.0 for i in range(n_epoch)]
     accTrain = [0.0 for i in range(n_epoch)]
     accTest = [0.0 for i in range(n_epoch)]
-    
+
+    #mencari rata rata error dan accurasi dari setiap fold
     for k in range(k_fold):
         err_train = list()
         err_test = list()
         acc_train = list()
         acc_test = list()
-        
+
+        #split data set from index a to b, kemudian mencari sum nya
+        #(karena tadi error dan accuracy dari setiap fold di jadikan satu)
         a = int(k*len(error_train)/k_fold)
         b = int(a+(len(error_train)/k_fold))
 
@@ -163,26 +178,28 @@ def averrage(error_train,error_test,
         accTrain = [x + y for x, y in zip(acc_train, accTrain)]
         accTest = [x + y for x, y in zip(acc_test, accTest)]
 
+    #membagi sum error dan accuracy dengan k_fold
     errorTrain = [x / k_fold for x in errorTrain]
     accTrain = [x / k_fold for x in accTrain]
     accTest = [x / k_fold for x in accTest]
     errorTest = [x / k_fold for x in errorTest]
 
+    #menggambar grafik
     draw_grafik(errorTrain,errorTest,
                 'Averrage Error',
                 'Error',
-                'Grafik Error k-fold')
+                'Grafik Error k-Fold')
     draw_grafik(accTrain,accTest,
                 'Averrage Accuracy',
                 'Accuracy',
-                'Grafik Accurasy k-fold')
+                'Grafik Accurasy k-Fold')
 
 
 ##draw grafik ---------------------------------------------------------------------------------------------------------------------
 def draw_grafik(data_train,data_test,label,ylabel,title):
     
-    plt.plot(data_train,label = label+' (Train)')
-    plt.plot(data_test, label = label+' (Test)')
+    plt.plot(data_train,label = label+' Train')
+    plt.plot(data_test, label = label+' Test')
     plt.xlabel('Epoch')
     plt.ylabel(ylabel)
     plt.title(title)
@@ -197,8 +214,8 @@ for i in range(len(dataset[0])-1):
 str_to_int(dataset,len(dataset[0])-1)
 
 k_fold = 5
-#l_rate = 0.2
 l_rate = 0.2
+#l_rate = 0.8
 epoch = 300
 
 error_train = list()
