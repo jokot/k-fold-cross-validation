@@ -193,7 +193,7 @@ for i in range(len(dataset[0])-1):
     str_to_float(dataset,i)
 str_to_int(dataset,len(dataset[0])-1)
 
-k_fold = 10
+k_fold = 5
 l_rate = 0.2
 epoch = 300
 
