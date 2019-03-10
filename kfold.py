@@ -24,6 +24,8 @@ def str_to_float(dataset,column):
 
 ##convert string type to int type ---------------------------------------------------------------------------------------------------------------------
 def str_to_int(dataset,column):
+    #if Iris-setosa replace with 0
+    #replace with 1
     for row in dataset:
         if row[column] == "Iris-setosa":
             row[column] = 0
@@ -45,7 +47,8 @@ def fold(dataset,
     for k in range(k_fold):
         dataset_train = list(dataset)
         dataset_test = list()
-        
+
+        #split from index a to b
         a = int(k*len(dataset)/k_fold)
         b = int(a+(len(dataset)/k_fold))
         
@@ -66,7 +69,7 @@ def fold(dataset,
 ## train the data---------------------------------------------------------------------------------------------------------------------       
 def train(dataset_train, l_rate,
           n_epoch, error_train,accuracy_train):
-    weight = [0. for i in range(len(dataset_train))]
+    weight = [0.0 for i in range(len(dataset_train))]
     sum_error = list()
     accuracy = list()
     
@@ -154,16 +157,16 @@ def averrage(error_train,error_test,
             acc_test.append(accuracy_test[m])
             acc_train.append(accuracy_train[m])
             
-        for m in range(n_epoch):
-            errorTrain = [x + y for x, y in zip(err_train, errorTrain)]
-            errorTest= [x + y for x, y in zip(err_test, errorTest)]
-            accTrain = [x + y for x, y in zip(acc_train, accTrain)]
-            accTest = [x + y for x, y in zip(acc_test, accTest)]
+        
+        errorTrain = [x + y for x, y in zip(err_train, errorTrain)]
+        errorTest= [x + y for x, y in zip(err_test, errorTest)]
+        accTrain = [x + y for x, y in zip(acc_train, accTrain)]
+        accTest = [x + y for x, y in zip(acc_test, accTest)]
 
-    errorTrain = [x / n_epoch*k_fold for x in errorTrain]
-    accTrain = [x / n_epoch*k_fold for x in accTrain]
-    accTest = [x / n_epoch*k_fold for x in accTest]
-    errorTest = [x / n_epoch*k_fold for x in errorTest]
+    errorTrain = [x / k_fold for x in errorTrain]
+    accTrain = [x / k_fold for x in accTrain]
+    accTest = [x / k_fold for x in accTest]
+    errorTest = [x / k_fold for x in errorTest]
 
     draw_grafik(errorTrain,errorTest,
                 'Averrage Error',
@@ -172,7 +175,7 @@ def averrage(error_train,error_test,
     draw_grafik(accTrain,accTest,
                 'Averrage Accuracy',
                 'Accuracy',
-                'Grafik Accurasi k-fold')
+                'Grafik Accurasy k-fold')
 
 
 ##draw grafik ---------------------------------------------------------------------------------------------------------------------
@@ -194,8 +197,8 @@ for i in range(len(dataset[0])-1):
 str_to_int(dataset,len(dataset[0])-1)
 
 k_fold = 5
+#l_rate = 0.2
 l_rate = 0.2
-#l_rate = 0.8
 epoch = 300
 
 error_train = list()
